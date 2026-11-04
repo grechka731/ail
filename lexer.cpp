@@ -15,16 +15,17 @@ void Lexer::goNextSymbol() {
   }
 }
 
-char Lexer::getCurSymbol() { 
-  return _currect < _file.size() ? _file[_currect] : '\0'; 
+char Lexer::getCurSymbol() {
+  return _currect < _file.size() ? _file[_currect] : '\0';
 }
 
-char Lexer::getSymbol(int poition) { 
-  return poition < _file.size() ? _file[poition] : '\0'; 
+char Lexer::getSymbol(int poition) {
+  return poition < _file.size() ? _file[poition] : '\0';
 }
 
-inline void Lexer::parseSpace() {
-  while (_currect < _file.size() && std::isspace(static_cast<unsigned char>(getCurSymbol()))) {
+inline void Lexer::scanSpace() {
+  while (_currect < _file.size() &&
+         std::isspace(static_cast<unsigned char>(getCurSymbol()))) {
     if (getCurSymbol() == '\n') {
       position.row++;
       position.column = 0;
@@ -33,12 +34,8 @@ inline void Lexer::parseSpace() {
   }
 }
 
-inline bool Lexer::parsedentifier() {
+inline Token Lexer::scanIdentifier() {
   int symbol = getCurSymbol();
-  
-  if (!std::isalpha(symbol) && symbol != '_') {
-    return false;
-  }
 
   while (_currect < _file.size()) {
     symbol = getCurSymbol();
@@ -50,16 +47,12 @@ inline bool Lexer::parsedentifier() {
     }
   }
 
-  _array.push_back(stringToToken(std::string_view(_file).substr(_start, _currect - _start)));
-  return true; 
+  return stringToToken(
+      std::string_view(_file).substr(_start, _currect - _start));
 }
 
-inline bool Lexer::parseLiteral() {
+inline Token Lexer::scanNumLiteral() {
   int symbol = getCurSymbol();
-
-  if (!std::isdigit(symbol)) {
-    return false;
-  }
 
   bool isDouble = false;
 
@@ -67,13 +60,12 @@ inline bool Lexer::parseLiteral() {
     symbol = getCurSymbol();
 
     if (std::isdigit(symbol)) {
-      goNextSymbol(); 
-    } 
-    else if ((symbol == ',') && !isDouble && std::isdigit(checkNextSymbol())) {
+      goNextSymbol();
+    } else if ((symbol == ',') && !isDouble &&
+               std::isdigit(checkNextSymbol())) {
       isDouble = true;
       goNextSymbol();
-    } 
-    else {
+    } else {
       break;
     }
   }
@@ -81,30 +73,42 @@ inline bool Lexer::parseLiteral() {
   Position token_position = position;
   token_position.column -= (_currect - _start);
 
-  TokenEnum type = isDouble ? TokenEnum::DOUBLE_LITERAL : TokenEnum::INT_LITERAL;
-  _array.push_back({type, token_position, std::string_view(_file).substr(_start, _currect - _start)});
-  return true; 
+  TokenEnum type =
+      isDouble ? TokenEnum::DOUBLE_LITERAL : TokenEnum::INT_LITERAL;
+
+  return {type, token_position,
+          std::string_view(_file).substr(_start, _currect - _start)};
 }
 
-inline void Lexer::parseSymbol() {
+inline Token Lexer::scanStrLiteral() {
+  Position token_position = position;
   goNextSymbol();
-  this->_array.push_back(
-      stringToToken(std::string_view(_file).substr(_start, _currect - _start)));
+
+  while (_currect < _file.size() && getCurSymbol() != '"') {
+    goNextSymbol();
+  }
+
+  if (_currect < _file.size()) {
+    goNextSymbol();
+  }
+
+  return {TokenEnum::STRING_LITERAL, token_position,
+          std::string_view(_file).substr(_start, _currect - _start)};
+}
+
+inline Token Lexer::scanSymbol() {
+  goNextSymbol();
+  return stringToToken(
+      std::string_view(_file).substr(_start, _currect - _start));
 }
 
 Token Lexer::stringToToken(std::string_view str) {
   static const std::unordered_map<std::string_view, TokenEnum> tokenMap{
-      {"let", LET},
-      {"fn", FN},
-      {"const", CONST},
-      {"true", TRUE},
-      {"false", FALSE},
+      {"let", LET},   {"fn", FN},       {"const", CONST},
+      {"true", TRUE}, {"false", FALSE},
 
-      {"+", PLUS},
-      {"-", MINUS},
-      {"*", STAR},
-      {"/", SLASH},
-      {"=", ASSIGN},
+      {"+", PLUS},    {"-", MINUS},     {"*", STAR},
+      {"/", SLASH},   {"=", ASSIGN},
   };
 
   Position token_position = position;
@@ -118,20 +122,19 @@ Token Lexer::stringToToken(std::string_view str) {
   return {IDENTIFIER, token_position, str};
 }
 
-void Lexer::readAllTokens() {
-  while (_currect < _file.size()) {
-    parseSpace();
+Token Lexer::nextToken() {
+  scanSpace();
 
-    if (_currect >= _file.size()) break;
+  _start = _currect;
+  int symbol = getCurSymbol();
 
-    _start = _currect;
+  if (symbol == '\0')
+    return {END_OF_FILE, position, ""};
+  if (std::isalpha(symbol) || symbol == '_') return scanIdentifier();
+  if (std::isdigit(symbol))
+    return scanNumLiteral();
+  if (symbol == '"')
+    return scanStrLiteral();
 
-    if (parsedentifier()) continue;
-    if (parseLiteral())    continue;
-    parseSymbol();
-  }
-}
-
-std::vector<Token> &Lexer::getArray() { 
-  return this->_array; 
+  return scanSymbol();
 }

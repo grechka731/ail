@@ -12,7 +12,6 @@ class Lexer {
 
     Position position{ 0, 1};
 
-    std::vector<Token> _array;
     std::string _file;
 
     char checkNextSymbol();
@@ -20,15 +19,16 @@ class Lexer {
     char getCurSymbol();
     char getSymbol(int poition);
 
-    inline void parseSpace();
-    inline bool parsedentifier(); 
-    inline bool parseLiteral();   
-    inline void parseSymbol();
+    inline void scanSpace();
+    inline Token scanIdentifier(); 
+    inline Token scanNumLiteral();   
+    inline Token scanStrLiteral();
+    inline Token scanCharLiteral();
+    inline Token scanSymbol();
 
     Token stringToToken(std::string_view str);
   
 public:
     explicit Lexer(std::string file) : _file(std::move(file)) {};
-    void readAllTokens();
-    std::vector<Token>& getArray();
+    Token nextToken();
 };

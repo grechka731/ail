@@ -10,6 +10,7 @@ enum TokenEnum {
     INT_LITERAL,
     DOUBLE_LITERAL,
     CHAR_LITERAL,
+    STRING_LITERAL,
 
     // keywords
     LET,
