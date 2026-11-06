@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/grch/code/ail/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

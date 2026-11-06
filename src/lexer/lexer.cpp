@@ -1,4 +1,4 @@
-#include "lexer.h"
+#include <lexer/lexer.h>
 #include <cctype>
 #include <string>
 #include <string_view>
@@ -54,16 +54,16 @@ inline Token Lexer::scanIdentifier() {
 inline Token Lexer::scanNumLiteral() {
   int symbol = getCurSymbol();
 
-  bool isDouble = false;
+  bool isFloat = false;
 
   while (_currect < _file.size()) {
     symbol = getCurSymbol();
 
     if (std::isdigit(symbol)) {
       goNextSymbol();
-    } else if ((symbol == ',') && !isDouble &&
+    } else if ((symbol == '.') && !isFloat &&
                std::isdigit(checkNextSymbol())) {
-      isDouble = true;
+      isFloat = true;
       goNextSymbol();
     } else {
       break;
@@ -74,7 +74,7 @@ inline Token Lexer::scanNumLiteral() {
   token_position.column -= (_currect - _start);
 
   TokenEnum type =
-      isDouble ? TokenEnum::DOUBLE_LITERAL : TokenEnum::INT_LITERAL;
+      isFloat ? TokenEnum::FLOAT_LITERAL : TokenEnum::INT_LITERAL;
 
   return {type, token_position,
           std::string_view(_file).substr(_start, _currect - _start)};

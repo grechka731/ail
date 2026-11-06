@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/grch/code/ail/build",
+  "command": "/usr/bin/c++  -I/home/grch/code/ail -I/home/grch/code/ail/include  -o CMakeFiles/ail.dir/src/lexer/lexer.cpp.o -c /home/grch/code/ail/src/lexer/lexer.cpp",
+  "file": "/home/grch/code/ail/src/lexer/lexer.cpp",
+  "output": "CMakeFiles/ail.dir/src/lexer/lexer.cpp.o"
+}
+]

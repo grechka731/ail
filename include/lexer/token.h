@@ -8,7 +8,7 @@ enum TokenEnum {
     // literals and identifiers
     IDENTIFIER,
     INT_LITERAL,
-    DOUBLE_LITERAL,
+    FLOAT_LITERAL,
     CHAR_LITERAL,
     STRING_LITERAL,
 
