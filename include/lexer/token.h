@@ -1,3 +1,4 @@
+#include <cmath>
 #include <string>
 
 enum TokenEnum {
@@ -5,6 +6,10 @@ enum TokenEnum {
     END_OF_FILE,
     UNKNOWN,
 
+    //PAREN
+    LPAREN,
+    RPAREN,
+    
     // literals and identifiers
     IDENTIFIER,
     INT_LITERAL,
@@ -24,7 +29,9 @@ enum TokenEnum {
     MINUS,
     STAR,
     SLASH,
-    ASSIGN
+    ASSIGN,
+    POW,
+    SQRT
 };
 
 struct Position{

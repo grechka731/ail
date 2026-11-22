@@ -108,7 +108,7 @@ Token Lexer::stringToToken(std::string_view str) {
       {"true", TRUE}, {"false", FALSE},
 
       {"+", PLUS},    {"-", MINUS},     {"*", STAR},
-      {"/", SLASH},   {"=", ASSIGN},
+      {"/", SLASH},   {"=", ASSIGN}, {"^", POW}, {"(", LPAREN}, {")", RPAREN},
   };
 
   Position token_position = position;
