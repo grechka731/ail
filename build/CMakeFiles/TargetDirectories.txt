@@ -1,3 +1,0 @@
-/home/grch/code/ail/build/CMakeFiles/ail.dir
-/home/grch/code/ail/build/CMakeFiles/edit_cache.dir
-/home/grch/code/ail/build/CMakeFiles/rebuild_cache.dir
