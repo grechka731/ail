@@ -1,0 +1,44 @@
+# build
+build/
+build-*/
+cmake-build-*/
+out/
+bin/
+lib/
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.exe
+*.dll
+
+# cmake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# repomix
+repomix-output.xml
+repomix-output.*
+repomix.config.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# logs / temp
+*.log
+*.tmp
+
+# bench
+test.txt
