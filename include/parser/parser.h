@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+
 #include "lexer/lexer.h"
 #include "ast.h"
 
@@ -6,7 +8,7 @@ class Parser{
     Lexer lexer;
     Token curToken;
     Token nextToken;
-
+    
     void advance();
     Node* parseStatement();
     
@@ -29,5 +31,5 @@ class Parser{
 
     Parser(Lexer lex) : lexer(std::move(lex)) {} 
 
-    Node* parse();
+    std::vector<Node*> parse();
 };

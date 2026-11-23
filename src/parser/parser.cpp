@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "parser/parser.h"
 #include "lexer/lexer.h"
 #include "parser/ast.h"
 #include <charconv>
@@ -58,10 +58,10 @@ Node *Parser::parseValue() {
     return new CharNode(ch);
   } else if (curToken.type == TokenEnum::TRUE) {
     advance();
-    return new BoolNode(1);
+    return new BoolNode(true);
   } else if (curToken.type == TokenEnum::FALSE) {
     advance();
-    return new BoolNode(0);
+    return new BoolNode(false);
   } else if (curToken.type == TokenEnum::STRING_LITERAL) {
     char string[256];
     size_t i = 0;
@@ -132,10 +132,19 @@ Node *Parser::parseHighestPrecedenceOperators() {
   return parseValue();
 }
 
-Node* Parser::parse() {
+std::vector<Node*> Parser::parse() {
+  std::vector<Node*> statement;
+  
   curToken = lexer.nextToken();
   nextToken = lexer.nextToken();
+
+  Node* buffer;
   while (curToken.type != TokenEnum::END_OF_FILE) {
-    parseStatement();
+    buffer=parseStatement();
+
+    if(buffer!=nullptr)
+      statement.push_back(buffer);
   }
+
+  return statement;
 }
