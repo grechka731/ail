@@ -7,9 +7,11 @@ enum TokenEnum {
     END_OF_FILE,
     UNKNOWN,
 
-    //PAREN
+    //symbols
     LPAREN,
     RPAREN,
+    COMMA,
+    NEWLINE,
     
     // literals and identifiers
     IDENTIFIER,

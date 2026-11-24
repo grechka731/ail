@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <string_view>
+#include <vector>
 
 class Node {
 public:
@@ -37,10 +38,18 @@ public:
 
 class StringLiteralNode : public Node {
 public:
-char* string;
-StringLiteralNode(char* string) : string(string) {}
+  std::string string;
+  StringLiteralNode(std::string string) : string(string) {}
 };
 
+class IdentifierNode : public Node {
+public:
+  std::string_view name;
+
+  IdentifierNode(std::string_view name) : name(name) {}
+
+  ~IdentifierNode() override {}
+};
 
 class BinaryNode : public Node {
 public:
@@ -62,8 +71,7 @@ public:
   std::string_view name;
   Node *value;
 
-  LetNode(std::string_view name, Node *value)
-      : name(name), value(value) {}
+  LetNode(std::string_view name, Node *value) : name(name), value(value) {}
 
   ~LetNode() override { delete value; }
 };
@@ -73,8 +81,23 @@ public:
   std::string_view name;
   Node *value;
 
-  ConstNode(std::string_view name, Node *value)
-      : name(name), value(value) {}
+  ConstNode(std::string_view name, Node *value) : name(name), value(value) {}
 
   ~ConstNode() override { delete value; }
+};
+
+class FnNode : public Node {
+public:
+  std::string_view nameFn;
+  std::vector<std::string_view> param;
+  std::vector<Node *> body;
+
+  FnNode(std::string_view nameFn, std::vector<std::string_view> param,
+         std::vector<Node *> body)
+      : nameFn(nameFn), param(param), body(body) {};
+
+  ~FnNode() override {
+    for (size_t i = 0; i < body.size(); i++)
+      delete body[i];
+  }
 };

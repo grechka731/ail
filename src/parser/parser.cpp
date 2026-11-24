@@ -33,6 +33,8 @@ Node *Parser::parseStatement() {
       value = parseLowPrecedenceOperators();
     }
     return new ConstNode(name, value);
+  } else if (curToken.type == TokenEnum::FN) {
+
   } else {
     Node *expr = parseLowPrecedenceOperators();
     return expr;
@@ -53,7 +55,7 @@ Node *Parser::parseValue() {
     advance();
     return new FloatNode(val, 32);
   } else if (curToken.type == TokenEnum::CHAR_LITERAL) {
-    char ch = curToken.word.data()[0];
+    char ch = curToken.word.data()[1];
     advance();
     return new CharNode(ch);
   } else if (curToken.type == TokenEnum::TRUE) {
@@ -63,16 +65,18 @@ Node *Parser::parseValue() {
     advance();
     return new BoolNode(false);
   } else if (curToken.type == TokenEnum::STRING_LITERAL) {
-    char string[256];
-    size_t i = 0;
-    while (curToken.word.data()[0] != '"') {
-      string[i] = curToken.word.data()[0];
+    std::string buffer;
+    size_t i = 1;
+    while (curToken.word.data()[i] != '"') {
+      buffer.push_back(curToken.word.data()[i]);
       i++;
-          advance();
     }
     advance();
-
-    return new StringLiteralNode(string);
+    return new StringLiteralNode(buffer);
+  } else if (curToken.type == TokenEnum::IDENTIFIER) {
+    std::string_view name = curToken.word;
+    advance();
+    return new IdentifierNode(name);
   }
 
   advance();
@@ -132,17 +136,17 @@ Node *Parser::parseHighestPrecedenceOperators() {
   return parseValue();
 }
 
-std::vector<Node*> Parser::parse() {
-  std::vector<Node*> statement;
-  
+std::vector<Node *> Parser::parse() {
+  std::vector<Node *> statement;
+
   curToken = lexer.nextToken();
   nextToken = lexer.nextToken();
 
-  Node* buffer;
+  Node *buffer;
   while (curToken.type != TokenEnum::END_OF_FILE) {
-    buffer=parseStatement();
+    buffer = parseStatement();
 
-    if(buffer!=nullptr)
+    if (buffer != nullptr)
       statement.push_back(buffer);
   }
 

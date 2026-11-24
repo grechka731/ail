@@ -1,5 +1,6 @@
-#include <lexer/lexer.h>
+#include "lexer/token.h"
 #include <cctype>
+#include <lexer/lexer.h>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -26,10 +27,6 @@ char Lexer::getSymbol(int poition) {
 inline void Lexer::scanSpace() {
   while (_currect < _file.size() &&
          std::isspace(static_cast<unsigned char>(getCurSymbol()))) {
-    if (getCurSymbol() == '\n') {
-      position.row++;
-      position.column = 0;
-    }
     goNextSymbol();
   }
 }
@@ -61,8 +58,7 @@ inline Token Lexer::scanNumLiteral() {
 
     if (std::isdigit(symbol)) {
       goNextSymbol();
-    } else if ((symbol == '.') && !isFloat &&
-               std::isdigit(checkNextSymbol())) {
+    } else if ((symbol == '.') && !isFloat && std::isdigit(checkNextSymbol())) {
       isFloat = true;
       goNextSymbol();
     } else {
@@ -73,8 +69,7 @@ inline Token Lexer::scanNumLiteral() {
   Position token_position = position;
   token_position.column -= (_currect - _start);
 
-  TokenEnum type =
-      isFloat ? TokenEnum::FLOAT_LITERAL : TokenEnum::INT_LITERAL;
+  TokenEnum type = isFloat ? TokenEnum::FLOAT_LITERAL : TokenEnum::INT_LITERAL;
 
   return {type, token_position,
           std::string_view(_file).substr(_start, _currect - _start)};
@@ -104,12 +99,12 @@ inline Token Lexer::scanSymbol() {
 
 Token Lexer::stringToToken(std::string_view str) {
   static const std::unordered_map<std::string_view, TokenEnum> tokenMap{
-      {"let", LET},   {"fn", FN},       {"const", CONST},
-      {"true", TRUE}, {"false", FALSE},
+      {"let", LET},     {"fn", FN},     {"const", CONST}, {"true", TRUE},
+      {"false", FALSE},
 
-      {"+", PLUS},    {"-", MINUS},     {"*", STAR},
-      {"/", SLASH},   {"=", ASSIGN}, {"^", POW}, {"(", LPAREN}, {")", RPAREN},
-  };
+      {"+", PLUS},      {"-", MINUS},   {"*", STAR},      {"/", SLASH},
+      {"=", ASSIGN},    {"^", POW},     {"(", LPAREN},    {")", RPAREN},
+      {",", COMMA},     {"\n", NEWLINE}};
 
   Position token_position = position;
   token_position.column -= (_currect - _start);
@@ -123,6 +118,18 @@ Token Lexer::stringToToken(std::string_view str) {
 }
 
 Token Lexer::nextToken() {
+  if (getCurSymbol() == '\n') {
+    Position token_position = position; 
+
+    goNextSymbol();    
+    _start = _currect; 
+
+    position.row++;     
+    position.column = 0; 
+
+    return {TokenEnum::NEWLINE, token_position,
+            "\n"}; 
+  }
   scanSpace();
 
   _start = _currect;
@@ -130,7 +137,8 @@ Token Lexer::nextToken() {
 
   if (symbol == '\0')
     return {END_OF_FILE, position, ""};
-  if (std::isalpha(symbol) || symbol == '_') return scanIdentifier();
+  if (std::isalpha(symbol) || symbol == '_')
+    return scanIdentifier();
   if (std::isdigit(symbol))
     return scanNumLiteral();
   if (symbol == '"')
