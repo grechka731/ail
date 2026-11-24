@@ -1,0 +1,18 @@
+let x = 100
+const pi = 3.14
+let flag_1 = true
+let _hidden_flag = false
+
+fn calculate_tax a, b
+  let tax = a * b
+  let total = a + tax
+  total
+
+let message = "привет мир это длинная строка с пробелами"
+let empty_str = ""
+
+let glue_test = a + b - c * d / e
+let weird_num = 12.34
+let broken_ident = 999
+
+const final_result = "конец блока"

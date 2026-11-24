@@ -1,5 +1,6 @@
 #include "parser/parser.h"
 #include "lexer/lexer.h"
+#include "lexer/token.h"
 #include "parser/ast.h"
 #include <charconv>
 #include <cstddef>
@@ -34,7 +35,35 @@ Node *Parser::parseStatement() {
     }
     return new ConstNode(name, value);
   } else if (curToken.type == TokenEnum::FN) {
+    advance();
+    std::string_view nameFn = curToken.word;
+    advance();
 
+    std::vector<std::string_view> param;
+    while (curToken.type != TokenEnum::NEWLINE) {
+      if (curToken.type != TokenEnum::COMMA)
+        param.push_back(curToken.word);
+      advance();
+    }
+    advance();
+
+    std::vector<Node *> body;
+    while (true) {
+      if (curToken.type == TokenEnum::END_OF_FILE)
+        break;
+      else if (curToken.type == TokenEnum::NEWLINE) {
+        advance();
+        if (curToken.type == TokenEnum::NEWLINE) {
+          advance();
+          break;
+        } else
+          continue;
+      } else {
+        body.push_back(parseStatement());
+      }
+    }
+
+    return new FnNode(nameFn, param, body);
   } else {
     Node *expr = parseLowPrecedenceOperators();
     return expr;
