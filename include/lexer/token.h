@@ -3,16 +3,22 @@
 #include <string>
 
 enum TokenEnum {
+    // section
+    AT_LOGIC,
+    AT_TYPES,
+    AT_DECS,
+    AT_SURFACE,
+
     // special tokens
     END_OF_FILE,
     UNKNOWN,
 
-    //symbols
+    // symbols
     LPAREN,
     RPAREN,
     COMMA,
     NEWLINE,
-    
+
     // literals and identifiers
     IDENTIFIER,
     INT_LITERAL,
@@ -37,13 +43,13 @@ enum TokenEnum {
     SQRT
 };
 
-struct Position{
-inline static std::string path="";
-int row;
-int column;
+struct Position {
+    inline static std::string path = "";
+    int row;
+    int column;
 };
 
-struct Token{
+struct Token {
     TokenEnum type;
     Position position;
     std::string_view word;

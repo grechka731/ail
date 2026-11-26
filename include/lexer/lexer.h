@@ -1,16 +1,15 @@
 #pragma once
-#include <vector>
+#include "token.h"
 #include <string>
 #include <string_view>
-#include "token.h"
 
 struct Token;
 
 class Lexer {
-    int _start = 0; 
-    int _currect = 0; 
+    int _start = 0;
+    int _currect = 0;
 
-    Position position{ 0, 1};
+    Position position{0, 1};
 
     std::string _file;
 
@@ -20,15 +19,16 @@ class Lexer {
     char getSymbol(int poition);
 
     inline void scanSpace();
-    inline Token scanIdentifier(); 
-    inline Token scanNumLiteral();   
+    inline Token scanSection();
+    inline Token scanIdentifier();
+    inline Token scanNumLiteral();
     inline Token scanStrLiteral();
     inline Token scanCharLiteral();
     inline Token scanSymbol();
 
     Token stringToToken(std::string_view str);
-  
-public:
+
+  public:
     explicit Lexer(std::string file) : _file(std::move(file)) {};
     Token nextToken();
 };
